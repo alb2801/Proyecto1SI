@@ -1,0 +1,21 @@
+{
+  "tamano_matriz": [4,4],
+  "matriz": [
+    {"punto1": {"es_turistico": true, "semaforo": false, "tiempo_semaforo": 30, "es_viable": true, "direccion": ["Norte", "Este"]}},
+    {"punto2": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 45, "es_viable": true, "direccion": ["Sur", "Oeste"]}},
+    {"punto3": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 60, "es_viable": false, "direccion": ["Este", "Norte"]}},
+    {"punto4": {"es_turistico": false, "semaforo": false, "tiempo_semaforo": 20, "es_viable": true, "direccion": ["Oeste", "Sur"]}},
+    {"punto5": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 40, "es_viable": false, "direccion": ["Norte", "Este"]}},
+    {"punto6": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 50, "es_viable": true, "direccion": ["Sur", "Oeste"]}},
+    {"punto7": {"es_turistico": true, "semaforo": false, "tiempo_semaforo": 35, "es_viable": true, "direccion": ["Este", "Norte"]}},
+    {"punto8": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 25, "es_viable": false, "direccion": ["Oeste", "Sur"]}},
+    {"punto9": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 55, "es_viable": true, "direccion": ["Norte", "Este"]}},
+    {"punto10": {"es_turistico": false, "semaforo": false, "tiempo_semaforo": 30, "es_viable": false, "direccion": ["Sur", "Oeste"]}},
+    {"punto11": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 45, "es_viable": true, "direccion": ["Este", "Norte"]}},
+    {"punto12": {"es_turistico": false, "semaforo": false, "tiempo_semaforo": 20, "es_viable": false, "direccion": ["Oeste", "Sur"]}},
+    {"punto13": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 40, "es_viable": true, "direccion": ["Norte", "Este"]}},
+    {"punto14": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 50, "es_viable": false, "direccion": ["Sur", "Oeste"]}},
+    {"punto15": {"es_turistico": false, "semaforo": false, "tiempo_semaforo": 35, "es_viable": true, "direccion": ["Este", "Norte"]}},
+    {"punto16": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 25, "es_viable": false, "direccion": ["Oeste", "Sur"]}}
+  ]
+}
