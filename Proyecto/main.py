@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
+from vehiculo import Vehiculo
 from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
+from menor_consumo import buscar_ruta_menor_consumo
 
 def crear_mapa(puntos):
     filas = max(punto.y for punto in puntos) + 1
@@ -41,23 +43,50 @@ def main():
     punto_inicial = next((punto for punto in puntos if punto.nombre == "punto1"), None)
     punto_destino = next((punto for punto in puntos if punto.nombre == "punto15"), None)
 
-    if punto_inicial and punto_destino:
-        # Llamar a la función buscar_ruta_mas_corta
-        ruta_nombres = buscar_ruta_mas_corta(puntos, punto_inicial.nombre, punto_destino.nombre)
+    #llamado ruta mas corta, sin semaforos
+    # if punto_inicial and punto_destino:
+    #     # Llamar a la función buscar_ruta_mas_corta
+    #     ruta_nombres = buscar_ruta_mas_corta(puntos, punto_inicial.nombre, punto_destino.nombre)
         
+    #     if ruta_nombres:
+    #         ruta = [punto for punto in puntos if punto.nombre in ruta_nombres]
+    #         print(f"La ruta más corta desde {punto_inicial.nombre} hasta {punto_destino.nombre} es:")
+    #         for punto in ruta:
+    #             print(f"Punto: {punto.nombre}")
+    #             print("Es turístico:", punto.es_turistico)
+    #             print("Tiene semáforo:", punto.semaforo)
+    #             print("Tiempo del semáforo:", punto.tiempo_semaforo)
+    #             print("Es viable:", punto.es_viable)
+    #             print("Dirección:", punto.direccion)
+    #             print("-------------------------")
+    #     else:
+    #         print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
+    
+    # Vehículo 1 (alto consumo)
+    vehiculo1 = Vehiculo(eficiencia_combustible=8)
+
+    # Vehículo 2 (consumo promedio)
+    vehiculo2 = Vehiculo(eficiencia_combustible=12)
+
+    # Vehículo 3 (bajo consumo)
+    vehiculo3 = Vehiculo(eficiencia_combustible=16)
+    
+    if punto_inicial and punto_destino:
+        # Llamar a la función buscar_ruta_menor_consumo
+        ruta_nombres, consumo_combustible = buscar_ruta_menor_consumo(puntos, punto_inicial.nombre, punto_destino.nombre, vehiculo1.eficiencia_combustible)
+    
         if ruta_nombres:
             ruta = [punto for punto in puntos if punto.nombre in ruta_nombres]
             print(f"La ruta más corta desde {punto_inicial.nombre} hasta {punto_destino.nombre} es:")
+            print(f"Ruta: {' -> '.join(ruta_nombres)}")
+            print(f"Consumo de combustible: {consumo_combustible} litros")
             for punto in ruta:
                 print(f"Punto: {punto.nombre}")
                 print("Es turístico:", punto.es_turistico)
-                print("Tiene semáforo:", punto.semaforo)
-                print("Tiempo del semáforo:", punto.tiempo_semaforo)
                 print("Es viable:", punto.es_viable)
                 print("Dirección:", punto.direccion)
                 print("-------------------------")
         else:
             print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
-
 if __name__ == "__main__":
     main()
