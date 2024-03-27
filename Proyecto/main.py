@@ -3,7 +3,9 @@ from tkinter import filedialog
 from vehiculo import Vehiculo
 from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
+from ruta_mas_rapida import buscar_ruta_mas_rapida
 from menor_consumo import buscar_ruta_menor_consumo
+from tour_trip  import tour_trip
 
 def crear_mapa(puntos):
     filas = max(punto.y for punto in puntos) + 1
@@ -70,7 +72,7 @@ def main():
 
     # Vehículo 3 (bajo consumo)
     vehiculo3 = Vehiculo(eficiencia_combustible=16)
-    
+    """
     if punto_inicial and punto_destino:
         # Llamar a la función buscar_ruta_menor_consumo
         ruta_nombres, consumo_combustible = buscar_ruta_menor_consumo(puntos, punto_inicial.nombre, punto_destino.nombre, vehiculo1.eficiencia_combustible)
@@ -87,6 +89,28 @@ def main():
                 print("Dirección:", punto.direccion)
                 print("-------------------------")
         else:
+            print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")"""
+
+    if punto_inicial and punto_destino:
+        # Llamar a la función buscar_ruta_ás rapida
+        ruta_nom, tiempo = buscar_ruta_mas_rapida(puntos, punto_inicial.nombre, punto_destino.nombre)
+    
+        if ruta_nom:
+            ruta = [punto for punto in puntos if punto.nombre in ruta_nom]
+            print(f"La ruta más rápida desde {punto_inicial.nombre} hasta {punto_destino.nombre} es:")
+            print(f"Ruta: {' -> '.join(ruta_nom)}")
+            print(f"Tiempo requerido: {tiempo} segundos")
+            for punto in ruta:
+                print(f"Punto: {punto.nombre}")
+                print("Es semaforo:", punto.semaforo)
+                print("Tiempo:", punto.tiempo_semaforo)
+                print("-------------------------")
+        else:
             print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
+
+    puntos_turisticos = [punto for punto in puntos if punto.es_turistico]
+
+
 if __name__ == "__main__":
     main()
+    
