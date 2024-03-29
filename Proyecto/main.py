@@ -65,13 +65,13 @@ def main():
     #         print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
     
     # Vehículo 1 (alto consumo)
-    vehiculo1 = Vehiculo(eficiencia_combustible=8)
+    vehiculo1 = Vehiculo(eficiencia_combustible=8, ubicacion="punto1")
 
     # Vehículo 2 (consumo promedio)
-    vehiculo2 = Vehiculo(eficiencia_combustible=12)
+    vehiculo2 = Vehiculo(eficiencia_combustible=12, ubicacion="punto10")
 
     # Vehículo 3 (bajo consumo)
-    vehiculo3 = Vehiculo(eficiencia_combustible=16)
+    vehiculo3 = Vehiculo(eficiencia_combustible=16, ubicacion="punto12")
     """
     if punto_inicial and punto_destino:
         # Llamar a la función buscar_ruta_menor_consumo

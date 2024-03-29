@@ -5,7 +5,7 @@
     {"punto2": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 45, "es_viable": true, "direccion": ["Este"]}},
     {"punto3": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 60, "es_viable": true, "direccion": ["Sur", "Este"]}},
     {"punto4": {"es_turistico": false, "semaforo": false, "tiempo_semaforo": 20, "es_viable": true, "direccion": ["Sur"]}},
-    {"punto5": {"es_turistico": true, "semaforo": true, "tiempo_semaforo": 40, "es_viable": false, "direccion": ["Norte"]}},
+    {"punto5": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 40, "es_viable": true, "direccion": ["Norte"]}},
     {"punto6": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 50, "es_viable": true, "direccion": ["Sur", "Oeste"]}},
     {"punto7": {"es_turistico": true, "semaforo": false, "tiempo_semaforo": 35, "es_viable": true, "direccion": ["Oeste", "Sur"]}},
     {"punto8": {"es_turistico": false, "semaforo": true, "tiempo_semaforo": 25, "es_viable": false, "direccion": ["Oeste"]}},
