@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 from vehiculo import Vehiculo
 from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
+from ruta_mas_rapida import buscar_ruta_mas_rapida
 from menor_consumo import buscar_ruta_menor_consumo
 
 matplotlib.use('Qt5Agg')
@@ -98,10 +99,6 @@ class VentanaPrincipal(QMainWindow):
     
         widget_central.setLayout(layout_principal)
 
-    def buscar_ruta_mas_rapida(self):
-        # Implementar la lógica para buscar la ruta más rápida
-        print("Buscar ruta más rápida")
-
     def buscar_ruta_mas_economica(self):
         # Implementar la lógica para buscar la ruta más económica
         print("Buscar ruta más económica")
@@ -109,10 +106,6 @@ class VentanaPrincipal(QMainWindow):
     def tour_trip(self):
         # Implementar la lógica para el Tour Trip
         print("Realizar Tour Trip")
-
-    def buscar_taxi_mas_cercano(self):
-        # Implementar la lógica para buscar el taxi más cercano
-        pass
 
     def seleccionar_json(self):
         options = QFileDialog.Options()
@@ -148,6 +141,12 @@ class VentanaPrincipal(QMainWindow):
             self.canvas.draw()
             
     def ingresar_datos(self):
+        self.lineedit_ubicacion_inicial.setEnabled(False)
+        self.lineedit_destino.setEnabled(False)
+        self.lineedit_vehiculo1.setEnabled(False)
+        self.lineedit_vehiculo2.setEnabled(False)
+        self.lineedit_vehiculo3.setEnabled(False)
+    
         # Obtener el punto destino
         punto_destino = None
     
@@ -157,7 +156,7 @@ class VentanaPrincipal(QMainWindow):
     
         if punto_destino:
             rutas = []  # Lista para almacenar las rutas y sus longitudes
-            
+    
             # Crear los vehículos a partir de los valores ingresados
             vehiculo1_datos = self.lineedit_vehiculo1.text().split('-')
             eficiencia_combustible1 = int(vehiculo1_datos[0].strip())
@@ -176,7 +175,7 @@ class VentanaPrincipal(QMainWindow):
             vehiculo3 = Vehiculo(eficiencia_combustible=eficiencia_combustible3, ubicacion=ubicacion3)
     
             self.vehiculos = [vehiculo1, vehiculo2, vehiculo3]
-            
+    
             # Buscar la ruta más corta para cada vehículo
             for vehiculo in self.vehiculos:
                 puntos_con_nombre = [punto for punto in self.puntos if punto.nombre == vehiculo.ubicacion]
@@ -186,7 +185,7 @@ class VentanaPrincipal(QMainWindow):
                     if ruta_nombres:
                         ruta = [punto for punto in self.puntos if punto.nombre in ruta_nombres]
                         longitud_ruta = len(ruta) - 1  # Calcular la longitud de la ruta como el número de movimientos
-                        rutas.append((vehiculo.ubicacion, longitud_ruta, ruta))
+                        rutas.append((vehiculo, longitud_ruta, ruta))
                     else:
                         print(f"No se encontró una ruta desde {vehiculo.ubicacion} hasta {punto_destino.nombre}.")
                 else:
@@ -195,7 +194,14 @@ class VentanaPrincipal(QMainWindow):
             # Seleccionar la ruta más corta
             if rutas:
                 ruta_mas_corta = min(rutas, key=lambda x: x[1])
-                print(f"La ruta más corta es desde {ruta_mas_corta[0]} con una longitud de {ruta_mas_corta[1]}")
+                vehiculo_ruta_mas_corta = ruta_mas_corta[0]  # Obtener el vehículo de la ruta más corta
+                eficiencia_combustible_vehiculo = vehiculo_ruta_mas_corta.eficiencia_combustible
+    
+                # Crear un nuevo vehículo con la ubicación actualizada al destino
+                nuevo_vehiculo = Vehiculo(eficiencia_combustible=eficiencia_combustible_vehiculo, ubicacion=punto_destino.nombre)
+                self.vehiculos.append(nuevo_vehiculo)  # Agregar el nuevo vehículo a la lista
+    
+                print(f"La ruta más corta es desde {ruta_mas_corta[0].ubicacion} con una longitud de {ruta_mas_corta[1]}")
                 print("Detalles de la ruta:")
                 for punto in ruta_mas_corta[2]:
                     print(f"Punto: {punto.nombre}")
@@ -205,13 +211,13 @@ class VentanaPrincipal(QMainWindow):
                     print("Es viable:", punto.es_viable)
                     print("Dirección:", punto.direccion)
                     print("-------------------------")
-                    
+    
                 self.graficar_ruta_seleccionada(ruta_mas_corta[2])
             else:
                 print("No se encontraron rutas válidas.")
         else:
             print("Debe ingresar una ubicación inicial válida.")
-            
+                
             
             
     def buscar_ruta_mas_corta(self):
@@ -238,54 +244,71 @@ class VentanaPrincipal(QMainWindow):
     def mostrar_ruta_menor_combustible(self):
         punto_inicial = None
         punto_destino = None
-
+    
         for punto in self.puntos:
             if punto.nombre == self.lineedit_ubicacion_inicial.text():
                 punto_inicial = punto
             if punto.nombre == self.lineedit_destino.text():
                 punto_destino = punto
-
+    
         if punto_inicial and punto_destino:
-            # Obtener los vehículos desde la interfaz
-            vehiculo1_datos = self.lineedit_vehiculo1.text().split('-')
-            eficiencia_combustible1 = int(vehiculo1_datos[0].strip())
-            ubicacion1 = vehiculo1_datos[1].strip()
-
-            vehiculo2_datos = self.lineedit_vehiculo2.text().split('-')
-            eficiencia_combustible2 = int(vehiculo2_datos[0].strip())
-            ubicacion2 = vehiculo2_datos[1].strip()
-
-            vehiculo3_datos = self.lineedit_vehiculo3.text().split('-')
-            eficiencia_combustible3 = int(vehiculo3_datos[0].strip())
-            ubicacion3 = vehiculo3_datos[1].strip()
-
-            # Buscar la ruta de menor consumo para cada vehículo
-            menor_consumo = float('inf')
-            ruta_menor_consumo = None
-
-            for eficiencia_combustible, ubicacion in [(eficiencia_combustible1, ubicacion1),
-                                                       (eficiencia_combustible2, ubicacion2),
-                                                       (eficiencia_combustible3, ubicacion3)]:
-                puntos_con_nombre = [punto for punto in self.puntos if punto.nombre == ubicacion]
-                if puntos_con_nombre:
-                    punto_inicial_vehiculo = puntos_con_nombre[0]
-                    ruta_nombres, consumo_combustible = buscar_ruta_menor_consumo(self.puntos, punto_inicial_vehiculo.nombre, punto_destino.nombre, eficiencia_combustible)
-                    if ruta_nombres and consumo_combustible < menor_consumo:
-                        menor_consumo = consumo_combustible
-                        ruta_menor_consumo = ruta_nombres
-
-            if ruta_menor_consumo:
-                ruta = [punto for punto in self.puntos if punto.nombre in ruta_menor_consumo]
-                self.graficar_ruta_seleccionada(ruta, estilo='^', color='r')  # Triángulos rojos
-                print(f"La ruta de menor consumo es:")
-                print(f"Ruta: {' -> '.join(ruta_menor_consumo)}")
-                print(f"Consumo de combustible: {menor_consumo} litros")
+            # Encontrar el nuevo vehículo agregado después de seleccionar la ruta más corta
+            nuevo_vehiculo = None
+            for vehiculo in self.vehiculos:
+                if vehiculo.ubicacion == punto_inicial.nombre:
+                    nuevo_vehiculo = vehiculo
+                    break
+    
+            if nuevo_vehiculo:
+                # Buscar la ruta de menor consumo para el nuevo vehículo
+                ruta_nombres, consumo_combustible = buscar_ruta_menor_consumo(self.puntos, nuevo_vehiculo.ubicacion, punto_destino.nombre, nuevo_vehiculo.eficiencia_combustible)
+    
+                if ruta_nombres:
+                    ruta = [punto for punto in self.puntos if punto.nombre in ruta_nombres]
+                    self.graficar_ruta_seleccionada(ruta, estilo='D', color='gray')
+                    print(f"La ruta de menor consumo es:")
+                    print(f"Ruta: {' -> '.join(ruta_nombres)}")
+                    print(f"Consumo de combustible: {consumo_combustible} litros")
+                else:
+                    print(f"No se encontró una ruta desde {nuevo_vehiculo.ubicacion} hasta {punto_destino.nombre}.")
             else:
-                print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
+                print("No se encontró el nuevo vehículo agregado.")
         else:
             print("Debe ingresar una ubicación inicial y un destino válidos.")
   
-            
+    def buscar_ruta_mas_rapida(self):
+        
+        punto_inicial = None
+        punto_destino = None
+    
+        for punto in self.puntos:
+            if punto.nombre == self.lineedit_ubicacion_inicial.text():
+                punto_inicial = punto
+            if punto.nombre == self.lineedit_destino.text():
+                punto_destino = punto
+    
+        if punto_inicial and punto_destino:
+            # Llamar a la función buscar_ruta_mas_rapida
+            ruta_nom, tiempo = buscar_ruta_mas_rapida(self.puntos, punto_inicial.nombre, punto_destino.nombre)
+    
+            if ruta_nom:
+                ruta = [punto for punto in self.puntos if punto.nombre in ruta_nom]
+                print(f"La ruta más rápida desde {punto_inicial.nombre} hasta {punto_destino.nombre} es:")
+                print(f"Ruta: {' -> '.join(ruta_nom)}")
+                print(f"Tiempo requerido: {tiempo} segundos")
+    
+                for punto in ruta:
+                    print(f"Punto: {punto.nombre}")
+                    print("Es semáforo:", punto.semaforo)
+                    print("Tiempo:", punto.tiempo_semaforo)
+                    print("-------------------------")
+    
+                self.graficar_ruta_seleccionada(ruta, estilo='D', color='gray')  # Asteriscos azules
+            else:
+                print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
+        else:
+            print("Debe ingresar una ubicación inicial y un destino válidos.")      
+    
     def graficar_ruta_seleccionada(self, ruta_seleccionada, estilo='o', color='y'):
         if self.figura:
             self.figura.clear()
@@ -318,7 +341,7 @@ class VentanaPrincipal(QMainWindow):
             timer = QTimer(self)
             timer.setSingleShot(True)
             timer.timeout.connect(self.graficar_puntos)
-            timer.start(10000)  # 10000 ms = 10 segundos
+            timer.start(5000)
 
             
     

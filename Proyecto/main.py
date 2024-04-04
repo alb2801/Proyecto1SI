@@ -5,7 +5,7 @@ from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
 from ruta_mas_rapida import buscar_ruta_mas_rapida
 from menor_consumo import buscar_ruta_menor_consumo
-from tour_trip  import tour_trip
+
 
 def crear_mapa(puntos):
     filas = max(punto.y for punto in puntos) + 1
