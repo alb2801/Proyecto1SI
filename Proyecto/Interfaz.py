@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QFileDialog, QLabel, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QFileDialog, QLabel, QLineEdit, QSplitter
 from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import Qt
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -16,26 +17,26 @@ class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Rutas")
-        self.setGeometry(100, 40, 1200, 700)
+        self.setGeometry(5, 40, 1350, 700)
 
         # Crear la figura y el canvas
         self.figura = Figure()
         self.canvas = FigureCanvas(self.figura)
 
         # Crear un widget central
-        widget_central = QWidget()
-        self.setCentralWidget(widget_central)
+        self.splitter = QSplitter(Qt.Horizontal)
+        self.setCentralWidget(self.splitter)
 
         # Crear los elementos de la interfaz
-        self.crear_elementos_interfaz(widget_central)
+        self.crear_elementos_interfaz()
 
         # Lista para almacenar los vehículos creados
         self.vehiculos = []
 
-    def crear_elementos_interfaz(self, widget_central):
-        layout_principal = QHBoxLayout()
+    def crear_elementos_interfaz(self):
     
         # Crear el área para los botones y otros elementos
+        widget_izquierda = QWidget()
         layout_izquierda = QVBoxLayout()
         boton_seleccionar_json = QPushButton("Seleccionar JSON")
         boton_seleccionar_json.clicked.connect(self.seleccionar_json)
@@ -89,15 +90,20 @@ class VentanaPrincipal(QMainWindow):
         layout_izquierda.addWidget(boton_ruta_menor_combustible)
         layout_izquierda.addWidget(boton_ruta_mas_economica)
         layout_izquierda.addWidget(boton_tour_trip)
+        
+        widget_izquierda.setLayout(layout_izquierda)
     
         # Crear el área para mostrar la gráfica
+        widget_derecha = QWidget()
         layout_derecha = QVBoxLayout()
         layout_derecha.addWidget(self.canvas)
+        widget_derecha.setLayout(layout_derecha)
+        
     
-        layout_principal.addLayout(layout_izquierda)
-        layout_principal.addLayout(layout_derecha)
-    
-        widget_central.setLayout(layout_principal)
+        self.splitter.addWidget(widget_izquierda)
+        self.splitter.addWidget(widget_derecha)
+        
+        self.splitter.setSizes([300, 900])
 
     def buscar_ruta_mas_economica(self):
         # Implementar la lógica para buscar la ruta más económica
