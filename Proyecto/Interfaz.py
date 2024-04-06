@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QFileDialog, QLabel, QLineEdit, QSplitter
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QFileDialog, QLabel, QLineEdit, QSplitter
 from PyQt5.QtCore import QTimer
 from PyQt5.QtCore import Qt
 import matplotlib
@@ -10,6 +10,7 @@ from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
 from ruta_mas_rapida import buscar_ruta_mas_rapida
 from menor_consumo import buscar_ruta_menor_consumo
+from tour_trip import TourTrip
 
 matplotlib.use('Qt5Agg')
 
@@ -72,6 +73,9 @@ class VentanaPrincipal(QMainWindow):
         boton_ingresar_datos = QPushButton("Ingresar Datos")
         boton_ingresar_datos.clicked.connect(self.ingresar_datos)
         layout_izquierda.addWidget(boton_ingresar_datos)
+        cambiar_datos = QPushButton("Cambiar datos")
+        cambiar_datos.clicked.connect(self.cambiar_datos)
+        layout_izquierda.addWidget(cambiar_datos)
         
         # Crear los botones adicionales
         boton_ruta_mas_corta = QPushButton("Ruta Más Corta")
@@ -80,15 +84,12 @@ class VentanaPrincipal(QMainWindow):
         boton_ruta_mas_rapida.clicked.connect(self.buscar_ruta_mas_rapida)
         boton_ruta_menor_combustible = QPushButton("Ruta Menor Combustible")
         boton_ruta_menor_combustible.clicked.connect(self.mostrar_ruta_menor_combustible)
-        boton_ruta_mas_economica = QPushButton("Ruta Más Económica")
-        boton_ruta_mas_economica.clicked.connect(self.buscar_ruta_mas_economica)
         boton_tour_trip = QPushButton("Tour Trip")
         boton_tour_trip.clicked.connect(self.tour_trip)
     
         layout_izquierda.addWidget(boton_ruta_mas_corta)
         layout_izquierda.addWidget(boton_ruta_mas_rapida)
         layout_izquierda.addWidget(boton_ruta_menor_combustible)
-        layout_izquierda.addWidget(boton_ruta_mas_economica)
         layout_izquierda.addWidget(boton_tour_trip)
         
         widget_izquierda.setLayout(layout_izquierda)
@@ -105,13 +106,12 @@ class VentanaPrincipal(QMainWindow):
         
         self.splitter.setSizes([300, 900])
 
-    def buscar_ruta_mas_economica(self):
-        # Implementar la lógica para buscar la ruta más económica
-        print("Buscar ruta más económica")
-
-    def tour_trip(self):
-        # Implementar la lógica para el Tour Trip
-        print("Realizar Tour Trip")
+    def cambiar_datos(self):
+        self.lineedit_ubicacion_inicial.setEnabled(True)
+        self.lineedit_destino.setEnabled(True)
+        self.lineedit_vehiculo1.setEnabled(True)
+        self.lineedit_vehiculo2.setEnabled(True)
+        self.lineedit_vehiculo3.setEnabled(True)
 
     def seleccionar_json(self):
         options = QFileDialog.Options()
@@ -124,26 +124,31 @@ class VentanaPrincipal(QMainWindow):
         if self.figura:
             self.figura.clear()
             ax = self.figura.add_subplot(111)
-
-            # Agrupar puntos por ubicación (x, y) y asignar color
-            puntos_unicos = {}  # Diccionario para almacenar puntos únicos por ubicación
+    
+            # Graficar puntos únicos con colores correspondientes
+            puntos_unicos = {}
             for punto in self.puntos:
                 ubicacion = (punto.x, punto.y)
                 if ubicacion not in puntos_unicos:
                     puntos_unicos[ubicacion] = punto
-
-            # Graficar puntos únicos con el color correspondiente
+    
             for ubicacion, punto in puntos_unicos.items():
                 color = 'g' if punto.es_turistico else ('b' if punto.es_viable else 'r')
                 ax.plot(ubicacion[0], ubicacion[1], 's', color=color, markersize=60)
-                ax.annotate(punto.nombre, ubicacion, fontsize=8)
-
-            # Ajustar los límites del eje
+                ax.annotate(punto.nombre, (ubicacion[0], ubicacion[1] - 0.4), fontsize=10, ha='center')
+                if punto.semaforo:
+                    ax.annotate('Semáforo', (ubicacion[0], ubicacion[1] + 0.3), fontsize=10, ha='center')
+            # Añadir flechas de posibles movimientos
+            for punto in self.puntos:
+                flechas_movimientos = punto.generar_flechas_movimientos()
+                for flecha in flechas_movimientos:
+                    ax.annotate('', xy=flecha[1], xytext=flecha[0], arrowprops=dict(facecolor='black', arrowstyle='->'))
+    
+            # Ajustar límites del eje
             ax.set_xlim([-1, max([punto.x for punto in self.puntos]) + 1])
             ax.set_ylim([-1, max([punto.y for punto in self.puntos]) + 1])
-
-
-            # Actualizar el canvas
+    
+            # Actualizar canvas
             self.canvas.draw()
             
     def ingresar_datos(self):
@@ -315,6 +320,66 @@ class VentanaPrincipal(QMainWindow):
         else:
             print("Debe ingresar una ubicación inicial y un destino válidos.")      
     
+    def tour_trip(self):
+        punto_inicial = None
+        
+        for punto in self.puntos:
+            if punto.nombre == self.lineedit_ubicacion_inicial.text():
+                punto_inicial = punto
+                
+        puntos_turisticos = [punto for punto in self.puntos if punto.es_turistico]
+        rutas_tour = TourTrip(self.puntos, puntos_turisticos, punto_inicial)
+    
+        if rutas_tour:
+            self.figura.clear()  # Limpia la figura antes de graficar las rutas
+            ax = self.figura.add_subplot(111)
+    
+            # Graficar los puntos únicos
+            puntos_unicos = {}
+            for punto in self.puntos:
+                ubicacion = (punto.x, punto.y)
+                if ubicacion not in puntos_unicos:
+                    puntos_unicos[ubicacion] = punto
+    
+            for ubicacion, punto in puntos_unicos.items():
+                color_punto = 'g' if punto.es_turistico else ('b' if punto.es_viable else 'r')
+                ax.plot(ubicacion[0], ubicacion[1], 's', color=color_punto, markersize=60)
+                ax.annotate(punto.nombre, ubicacion, fontsize=8)
+    
+            # Graficar todas las rutas seleccionadas
+            for ruta in rutas_tour:
+                ruta_puntos = [punto for punto in self.puntos if punto.nombre in ruta]
+                for punto in ruta_puntos:
+                    ax.plot(punto.x, punto.y, 'D', color='gray', markersize=10)
+            
+            print("La ruta del tour es: ")
+            if rutas_tour:
+                for ruta in rutas_tour:
+                    cont=1
+                    for ruta_p in ruta:
+                        if cont!=0:
+                            print(ruta_p," -> ", end="")
+                        cont=cont+1
+                    cont=0
+
+            else:
+                print("No se pudo realizar el recorrido completo")
+            # Ajustar los límites del eje
+            ax.set_xlim([-1, max([punto.x for punto in self.puntos]) + 1])
+            ax.set_ylim([-1, max([punto.y for punto in self.puntos]) + 1])
+    
+            # Actualizar el canvas
+            self.canvas.draw()
+            
+            timer = QTimer(self)
+            timer.setSingleShot(True)
+            timer.timeout.connect(self.graficar_puntos)
+            timer.start(5000)
+    
+        else:
+            print("No se pudo realizar el recorrido completo")
+
+        
     def graficar_ruta_seleccionada(self, ruta_seleccionada, estilo='o', color='y'):
         if self.figura:
             self.figura.clear()

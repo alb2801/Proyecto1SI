@@ -33,3 +33,14 @@ class PuntoMapa:
                 pass
     
         return movimientos
+    
+    def generar_flechas_movimientos(self):
+        movimientos = self.movimientos_posible()
+        flechas = []
+        for dx, dy in movimientos:
+            inicio_x = self.x
+            inicio_y = self.y
+            fin_x = self.x + dx * 0.3  # Ajusta la longitud de la flecha multiplicando por un factor
+            fin_y = self.y + dy * 0.3  # Ajusta la longitud de la flecha multiplicando por un factor
+            flechas.append(((inicio_x, inicio_y), (fin_x, fin_y)))
+        return flechas

@@ -91,7 +91,7 @@ def main():
                 print("-------------------------")
         else:
             print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")"""
-
+    """
     if punto_inicial and punto_destino:
         # Llamar a la función buscar_ruta_ás rapida
         ruta_nom, tiempo = buscar_ruta_mas_rapida(puntos, punto_inicial.nombre, punto_destino.nombre)
@@ -108,7 +108,7 @@ def main():
                 print("-------------------------")
         else:
             print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
-
+    """
     puntos_turisticos = [punto for punto in puntos if punto.es_turistico]
 
     puntos_turisticos = [punto for fila in mapa for punto in fila if punto.es_turistico]
@@ -116,7 +116,7 @@ def main():
     for i in puntos_turisticos:
         print(f"Punto: {i.nombre}")
 
-    rutas_tour = TourTrip(puntos, puntos_turisticos)
+    rutas_tour = TourTrip(puntos, puntos_turisticos, punto_inicial)
     print("La ruta del tour es: ")
     if rutas_tour:
         for ruta in rutas_tour:
