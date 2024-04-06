@@ -5,6 +5,7 @@ from lectura_json import procesar_archivo_json
 from ruta_mas_corta import buscar_ruta_mas_corta
 from ruta_mas_rapida import buscar_ruta_mas_rapida
 from menor_consumo import buscar_ruta_menor_consumo
+from tour_trip import TourTrip
 
 
 def crear_mapa(puntos):
@@ -110,6 +111,24 @@ def main():
 
     puntos_turisticos = [punto for punto in puntos if punto.es_turistico]
 
+    puntos_turisticos = [punto for fila in mapa for punto in fila if punto.es_turistico]
+
+    for i in puntos_turisticos:
+        print(f"Punto: {i.nombre}")
+
+    rutas_tour = TourTrip(puntos, puntos_turisticos)
+    print("La ruta del tour es: ")
+    if rutas_tour:
+        for ruta in rutas_tour:
+            cont=1
+            for ruta_p in ruta:
+                if cont!=0:
+                    print(ruta_p," -> ", end="")
+                cont=cont+1
+            cont=0
+
+    else:
+        print("No se pudo realizar el recorrido completo")
 
 if __name__ == "__main__":
     main()
