@@ -234,24 +234,34 @@ class VentanaPrincipal(QMainWindow):
     def buscar_ruta_mas_corta(self):
         punto_inicial = None
         punto_destino = None
-
+    
         for punto in self.puntos:
             if punto.nombre == self.lineedit_ubicacion_inicial.text():
                 punto_inicial = punto
             if punto.nombre == self.lineedit_destino.text():
                 punto_destino = punto
-
+    
         if punto_inicial and punto_destino:
             ruta_nombres = buscar_ruta_mas_corta(self.puntos, punto_inicial.nombre, punto_destino.nombre)
-
+    
             if ruta_nombres:
                 ruta = [punto for punto in self.puntos if punto.nombre in ruta_nombres]
                 self.graficar_ruta_seleccionada(ruta, estilo='D', color='gray')
+    
+                # Imprimir la ruta seleccionada por consola
+                print("Ruta seleccionada:")
+                for punto in ruta:
+                    print(punto.nombre)
+    
+                # Contar el número de puntos en la ruta y mostrarlo como "coste"
+                coste = len(ruta)
+                print(f"Coste: {coste}")
+    
             else:
                 print(f"No se encontró una ruta desde {punto_inicial.nombre} hasta {punto_destino.nombre}.")
         else:
             print("Debe ingresar una ubicación inicial y un destino válidos.")
-
+    
     def mostrar_ruta_menor_combustible(self):
         punto_inicial = None
         punto_destino = None
@@ -277,9 +287,12 @@ class VentanaPrincipal(QMainWindow):
                 if ruta_nombres:
                     ruta = [punto for punto in self.puntos if punto.nombre in ruta_nombres]
                     self.graficar_ruta_seleccionada(ruta, estilo='D', color='gray')
-                    print(f"La ruta de menor consumo es:")
+                    print("La ruta de menor consumo es:")
                     print(f"Ruta: {' -> '.join(ruta_nombres)}")
                     print(f"Consumo de combustible: {consumo_combustible} litros")
+                
+                    coste = len(ruta)
+                    print(f"Coste: {coste}")                
                 else:
                     print(f"No se encontró una ruta desde {nuevo_vehiculo.ubicacion} hasta {punto_destino.nombre}.")
             else:
@@ -307,6 +320,9 @@ class VentanaPrincipal(QMainWindow):
                 print(f"La ruta más rápida desde {punto_inicial.nombre} hasta {punto_destino.nombre} es:")
                 print(f"Ruta: {' -> '.join(ruta_nom)}")
                 print(f"Tiempo requerido: {tiempo} segundos")
+                
+                coste = len(ruta)
+                print(f"Coste: {coste}")
     
                 for punto in ruta:
                     print(f"Punto: {punto.nombre}")
@@ -322,11 +338,10 @@ class VentanaPrincipal(QMainWindow):
     
     def tour_trip(self):
         punto_inicial = None
-        
         for punto in self.puntos:
             if punto.nombre == self.lineedit_ubicacion_inicial.text():
                 punto_inicial = punto
-                
+    
         puntos_turisticos = [punto for punto in self.puntos if punto.es_turistico]
         rutas_tour = TourTrip(self.puntos, puntos_turisticos, punto_inicial)
     
@@ -351,26 +366,29 @@ class VentanaPrincipal(QMainWindow):
                 ruta_puntos = [punto for punto in self.puntos if punto.nombre in ruta]
                 for punto in ruta_puntos:
                     ax.plot(punto.x, punto.y, 'D', color='gray', markersize=10)
-            
+    
             print("La ruta del tour es: ")
             if rutas_tour:
+                coste_total = 0  # Inicializar el coste total
                 for ruta in rutas_tour:
-                    cont=1
+                    cont = 1
                     for ruta_p in ruta:
-                        if cont!=0:
-                            print(ruta_p," -> ", end="")
-                        cont=cont+1
-                    cont=0
-
+                        if cont != 0:
+                            print(ruta_p, " -> ", end="")
+                        cont = cont + 1
+                        coste_total += 1  # Incrementar el coste total por cada punto de la ruta
+                    cont = 0
+                    print()  # Imprimir una nueva línea después de cada ruta
+                print("\nCoste total:", coste_total)  # Imprimir el coste total
             else:
                 print("No se pudo realizar el recorrido completo")
+    
             # Ajustar los límites del eje
             ax.set_xlim([-1, max([punto.x for punto in self.puntos]) + 1])
             ax.set_ylim([-1, max([punto.y for punto in self.puntos]) + 1])
     
             # Actualizar el canvas
             self.canvas.draw()
-            
             timer = QTimer(self)
             timer.setSingleShot(True)
             timer.timeout.connect(self.graficar_puntos)
